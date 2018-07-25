@@ -1,0 +1,36 @@
+########### server ###########  
+server:
+  port: 8091
+
+########### logging ########### 
+logging:
+  level:
+    root: WARN 
+    org:
+      ll: DEBUG
+      springframework:
+        security: DEBUG
+        web: DEBUG
+
+
+########### eureka ###########
+# found in config server common config
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+########### api ###########     
+api:
+  resourceID: sparklr
+  client: api_client
+  secret: secret
+  
+########### security ###########
+security:
+  storeType: JKS
+  trustStore: oauth.jks
+  storepass: oauthoauth
+  trustKeyAlias: rsaauthkey
+  sigAlg: SHA256withRSA
+  
