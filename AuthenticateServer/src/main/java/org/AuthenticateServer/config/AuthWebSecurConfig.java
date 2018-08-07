@@ -55,6 +55,10 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 		@Value("${api.secret}")
 		private String secret;
 		
+		@Value("${api.grantType}")
+		private String grantType;
+		
+		
 		@Value("${security.trustStore}")
 		private String authKeyStore;
 		
@@ -133,7 +137,7 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 		            .withClient(client)
 		            	.resourceIds(api_resource_id)
 		            	.secret(secret)
-		                .authorizedGrantTypes("password")
+		                .authorizedGrantTypes(grantType)
 		                .authorities("ROLE_CLIENT")
 		                .scopes("read", "write")
 		                .autoApprove(true)

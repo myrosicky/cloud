@@ -1,6 +1,6 @@
 ########### server ###########  
 server:
-  port: 8090
+  port: 8091
 
 ########### logging ########### 
 logging:
@@ -11,36 +11,28 @@ logging:
       springframework:
         security: DEBUG
         web: DEBUG
-        
-########### zuul ###########   
-zuul:
-  routes:
-    api:
-      path: /api/**
-      serviceId: api
-      sensitiveHeaders: 
-  host:
-    maxTotalConnections: 200
-    maxPerRouteConnections: 100
 
-########### ribbon ###########  
-ribbon:
-  eureka:
-    enabled: true
 
 ########### eureka ###########
+# found in config server common config
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
-      
 
+########### api ###########     
+api:
+  resourceID: sparklr
+  client: api_client
+  secret: secret
+  grantType: password
+  
+  
 ########### security ###########
 security:
   storeType: JKS
-  trustStore: clientTrust.jks
-  storepass: clientTrust
-  trustKeyAlias: rsaauthKey
+  trustStore: jks/oauth.jks
+  storepass: oauthoauth
+  trustKeyAlias: rsaauthkey
   sigAlg: SHA256withRSA
-  resourceID: sparklr
   

@@ -83,7 +83,7 @@ public class GateWayWebSecurConfig extends WebSecurityConfigurerAdapter {
 				.requestMatchers().antMatchers("/api/**", "/oauth/users/**", "/oauth/clients/**","/me")
 			.and()
 				.authorizeRequests()
-					.antMatchers("/api/**").access("hasAnyRole('ROLE_API_USER')")
+					.antMatchers("/api/**").access(" hasAnyRole('ROLE_API_USER')")
 					
 					.antMatchers("/me").access("#oauth2.hasScope('read')")					
 					.antMatchers("/photos").access("#oauth2.hasScope('read') or (!#oauth2.isOAuth() and hasRole('ROLE_USER'))")                                        
