@@ -5,30 +5,36 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.security.interfaces.RSAPrivateKey;
 
+import org.AuthenticateServer.service.impl.CustomUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.jwt.crypto.sign.RsaSigner;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.jwt.crypto.sign.Signer;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
-import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -211,9 +217,47 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth)
 			throws Exception {
-		auth.inMemoryAuthentication()
-		.withUser("u").password("p").roles("API_USER")
+		auth
+			.authenticationProvider(customAuthenticationProvider())
 		;
+	}
+	
+	@Bean
+	UserDetailsService customUserDetailsService(){
+		return new CustomUserDetailsService();
+	}
+	
+	@Bean 
+	PasswordEncoder bCryptPasswordEncoder(){
+		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean
+	AuthenticationProvider customAuthenticationProvider(){
+		DaoAuthenticationProvider customAuthenticationProvider = new DaoAuthenticationProvider(){
+
+			
+			@Override
+			protected void additionalAuthenticationChecks(
+					UserDetails userDetails,
+					UsernamePasswordAuthenticationToken authentication)
+					throws AuthenticationException {
+				
+				String username = authentication.getName();
+				String password = (String) authentication.getCredentials();
+				
+				if(log.isDebugEnabled()){
+					log.debug("username:" + username + ", password:" + password + ", userDetails.getPassword():" + userDetails.getPassword());
+				}
+				
+				if(!bCryptPasswordEncoder().matches(password, userDetails.getPassword())){
+					throw new BadCredentialsException("bad credentials:" + username);
+				}
+			}
+			
+		};
+		customAuthenticationProvider.setUserDetailsService(customUserDetailsService());
+		return customAuthenticationProvider;
 	}
 
 	@Bean
@@ -221,5 +265,5 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 	protected AuthenticationManager authenticationManager() throws Exception {
 		return super.authenticationManager();
 	}
-
+	
 }

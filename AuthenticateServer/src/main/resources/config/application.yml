@@ -7,7 +7,7 @@ logging:
   level:
     root: WARN 
     org:
-      ll: DEBUG
+      AuthenticateServer: DEBUG
       springframework:
         security: DEBUG
         web: DEBUG
@@ -35,4 +35,9 @@ security:
   storepass: oauthoauth
   trustKeyAlias: rsaauthkey
   sigAlg: SHA256withRSA
-  
+
+
+########### spring ########### 
+spring:
+  profiles:
+    active: dev
