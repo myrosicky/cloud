@@ -22,23 +22,24 @@ public class UserRoleDaoTest extends TestConfig {
 	@Test
 	public final void testSaveS() {
 		UserRole userRole = new UserRole();
-//		userRole.setOwnerId(1l);
-//		userRole.setRoleId(3l);
-//		userRole.setType(UserRole.TYPE_USER);
-//		userRole.setCreateBy("junit");
-//		userRole.setCreateTime(new Date());
-//		userRoleDao.save(userRole);
-//		
-//		userRole = new UserRole();
-//		userRole.setOwnerId(1l);
-//		userRole.setRoleId(4l);
-//		userRole.setType(UserRole.TYPE_USER);
-//		userRole.setCreateBy("junit");
-//		userRole.setCreateTime(new Date());
-//		userRoleDao.save(userRole);
+		userRole.setOwnerId(2l);
+		userRole.setRoleId(1l);
+		userRole.setType(UserRole.TYPE_USER);
+		userRole.setCreateBy("junit");
+		userRole.setCreateTime(new Date());
+		userRoleDao.save(userRole);
 		
-		userRole.setOwnerId(1l);
-		userRole.setRoleId(5l);
+		userRole = new UserRole();
+		userRole.setOwnerId(2l);
+		userRole.setRoleId(2l);
+		userRole.setType(UserRole.TYPE_USER);
+		userRole.setCreateBy("junit");
+		userRole.setCreateTime(new Date());
+		userRoleDao.save(userRole);
+		
+		userRole = new UserRole();
+		userRole.setOwnerId(2l);
+		userRole.setRoleId(3l);
 		userRole.setType(UserRole.TYPE_USER);
 		userRole.setCreateBy("junit");
 		userRole.setCreateTime(new Date());

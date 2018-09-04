@@ -62,10 +62,6 @@ public class UserDaoTest extends TestConfig {
 		log.debug("password match:" + passwordEncoder.matches("p", user.getPassword()));
 	}
 	
-	
-
-	
-
 	@Test
 	public final void testDelete() {
 		userDao.delete(1l);
