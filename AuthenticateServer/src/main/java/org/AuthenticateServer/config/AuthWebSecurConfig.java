@@ -46,6 +46,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 @Configuration
 @EnableWebSecurity
@@ -277,22 +278,25 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	AuthenticationProvider customAuthenticationProvider(){
 		DaoAuthenticationProvider customAuthenticationProvider = new DaoAuthenticationProvider(){
-
 			
 			@Override
 			protected void additionalAuthenticationChecks(
 					UserDetails userDetails,
 					UsernamePasswordAuthenticationToken authentication)
 					throws AuthenticationException {
-				
+				authentication.getDetails();
 				String username = authentication.getName();
 				String password = (String) authentication.getCredentials();
 				
+				WebAuthenticationDetails details = (WebAuthenticationDetails)authentication.getDetails();
+				
 				if(log.isDebugEnabled()){
-					log.debug("username:" + username + ", password:" + password + ", userDetails.getPassword():" + userDetails.getPassword());
+					log.debug("username:" + username + ", password:" + password + ", userDetails.getPassword():" + userDetails.getPassword() + ", details:" + details + ", details.getClass():" + details.getClass());
 				}
 				
-				if(!bCryptPasswordEncoder().matches(password, userDetails.getPassword())){
+				if(!userDetails.isEnabled() 
+						|| !bCryptPasswordEncoder().matches(password, userDetails.getPassword())
+						){
 					throw new BadCredentialsException("bad credentials:" + username);
 				}
 			}
