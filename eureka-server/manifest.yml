@@ -1,0 +1,7 @@
+---
+applications:
+- name: ll-eureka-server
+  memory: 700M
+  instances: 1 
+  path: target/eureka-server-0.0.1-SNAPSHOT.war
+  random-route: true

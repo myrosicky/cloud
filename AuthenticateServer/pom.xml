@@ -8,9 +8,8 @@
 		<artifactId>cloud</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>AuthenticateServer</artifactId>
-	<name>AuthenticateServer</name>
-	<url>http://maven.apache.org</url>
+	<artifactId>auth-server</artifactId>
+	<name>auth-server</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -47,4 +46,5 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 	</dependencies>
+	<packaging>war</packaging>
 </project>
