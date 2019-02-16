@@ -77,7 +77,7 @@
 		<module>config-server</module>
 		<module>zuul</module>
 		<module>ribbon</module>
-		<module>AuthenticateServer</module>
+		<module>auth-server</module>
 	</modules>
 
 	<repositories>
