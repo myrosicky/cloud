@@ -40,4 +40,10 @@ security:
 ########### spring ########### 
 spring:
   profiles:
-    active: dev
+    active: cloud
+  jpa:
+    hibernate:
+      ddl-auto: none
+      dialect: org.hibernate.dialect.MySQLDialect
+#      dialect: org.hibernate.dialect.Oracle10gDialect
+      packagesToScan: org.business.models
