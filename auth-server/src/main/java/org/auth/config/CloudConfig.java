@@ -1,4 +1,4 @@
-package org.AuthenticateServer.config;
+package org.auth.config;
 
 import java.util.Properties;
 

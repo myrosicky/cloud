@@ -5,8 +5,11 @@ applications:
   instances: 1 
   path: target/auth-server-0.0.1-SNAPSHOT.war
   random-route: true
+  buildpacks:
+    - https://github.com/cloudfoundry/ibm-websphere-liberty-buildpack.git
   env:
     RAILS_ENV: production
-    RACK_ENV: production
+    IBM_JVM_LICENSE: L-SMKR-AVSEUH
+    IBM_LIBERTY_LICENSE: L-CTUR-B4WNHE
   services:
    - instance1

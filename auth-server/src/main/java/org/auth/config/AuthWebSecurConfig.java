@@ -1,4 +1,4 @@
-package org.AuthenticateServer.config;
+package org.auth.config;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -8,8 +8,8 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.AuthenticateServer.dao.UserDao;
-import org.AuthenticateServer.dao.UserRoleDao;
+import org.auth.dao.UserDao;
+import org.auth.dao.UserRoleDao;
 import org.business.models.User;
 import org.business.models.UserRole;
 import org.slf4j.Logger;

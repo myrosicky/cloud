@@ -1,4 +1,4 @@
-package org.AuthenticateServer.dao;
+package org.auth.dao;
 
 import java.util.List;
 

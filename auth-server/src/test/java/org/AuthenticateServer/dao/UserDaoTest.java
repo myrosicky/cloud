@@ -3,6 +3,7 @@ package org.AuthenticateServer.dao;
 import java.util.Date;
 
 import org.AuthenticateServer.config.TestConfig;
+import org.auth.dao.UserDao;
 import org.business.models.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;

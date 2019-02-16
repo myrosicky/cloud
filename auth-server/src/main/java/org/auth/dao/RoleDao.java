@@ -1,4 +1,4 @@
-package org.AuthenticateServer.dao;
+package org.auth.dao;
 
 import org.business.models.Role;
 import org.springframework.data.jpa.repository.JpaRepository;

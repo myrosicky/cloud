@@ -9,13 +9,10 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	
-	
-	<groupId>org.ll</groupId>
 	<artifactId>zuul</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>zuul Maven Webapp</name>
-	<url>http://maven.apache.org</url>
+	<name>zuul</name>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -44,7 +41,4 @@
 			<optional>true</optional>
 		</dependency>
 	</dependencies>
-	<build>
-		<finalName>zuul</finalName>
-	</build>
 </project>
