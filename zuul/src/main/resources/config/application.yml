@@ -39,7 +39,7 @@ eureka:
 security:
   storeType: JKS
   trustStore: jks/clientTrust.jks
-  storepass: clientTrust
+  storepass: 
   trustKeyAlias: rsaauthKey
   sigAlg: SHA256withRSA
   resourceID: sparklr

@@ -32,7 +32,7 @@ api:
 security:
   storeType: JKS
   trustStore: jks/oauth.jks
-  storepass: oauthoauth
+  storepass: 
   trustKeyAlias: rsaauthkey
   sigAlg: SHA256withRSA
 
