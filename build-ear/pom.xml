@@ -36,20 +36,15 @@
 	</dependencies>
 
 	<build>
+		<finalName>cloud</finalName>
 		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ear-plugin</artifactId>
-				<version>2.9</version>
+				<version>3.0.1</version>
 				<configuration>
-					<!-- 指定要打包的 jar包和资源文件 
-					<packagingIncludes>META-INF/**,**/*.jar,**/*.war</packagingIncludes>
--->
-					<modules>
+					<packagingIncludes>META-INF/**,**/*.war</packagingIncludes>
+           			<modules>
 						<webModule>
 							<groupId>org.ll</groupId>
 							<artifactId>auth-server</artifactId>
