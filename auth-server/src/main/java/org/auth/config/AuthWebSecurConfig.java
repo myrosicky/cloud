@@ -8,6 +8,7 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.auth.config.AuthWebSecurConfig.CustomUserDetailsService;
 import org.auth.dao.UserDao;
 import org.auth.dao.UserRoleDao;
 import org.business.models.User;
@@ -15,6 +16,7 @@ import org.business.models.UserRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +27,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.AuthenticationException;
@@ -53,8 +57,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 
 	private final static Logger log = LoggerFactory.getLogger(AuthWebSecurConfig.class);
-	
-	
 	
 	@Configuration
 	@EnableAuthorizationServer
@@ -88,6 +90,8 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 		@Value("${security.sigAlg}")
 		private String sigAlg;
 		
+		
+		
 		@Autowired
 		private TokenStore tokenStore;
 
@@ -95,7 +99,6 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 //		private UserApprovalHandler userApprovalHandler;
 
 		@Autowired
-//		@Qualifier("authenticationManagerBean")
 		private AuthenticationManager authenticationManager;
 
 		@Override
@@ -103,51 +106,12 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 
 			// @formatter:off
 			clients.inMemory()
-//					.withClient("tonr")
-//			 			.resourceIds(API_RESOURCE_ID)
-//			 			.authorizedGrantTypes("authorization_code", "implicit")
-//			 			.authorities("ROLE_CLIENT")
-//			 			.scopes("read", "write")
-//			 			.secret("secret")
-//			 		.and()
-//			 		.withClient("tonr-with-redirect")
-//			 			.resourceIds(API_RESOURCE_ID)
-//			 			.authorizedGrantTypes("authorization_code", "implicit")
-//			 			.authorities("ROLE_CLIENT")
-//			 			.scopes("read", "write")
-//			 			.secret("secret")
-////			 			.redirectUris(tonrRedirectUri)
-//			 		.and()
-//		 		    .withClient("my-client-with-registered-redirect")
-//	 			        .resourceIds(API_RESOURCE_ID)
-//	 			        .authorizedGrantTypes("authorization_code", "client_credentials")
-//	 			        .authorities("ROLE_CLIENT")
-//	 			        .scopes("read", "trust")
-//	 			        .redirectUris("http://anywhere?key=value")
-//		 		    .and()
-//	 		        .withClient("my-trusted-client")
-// 			            .authorizedGrantTypes("password", "authorization_code", "refresh_token", "implicit")
-// 			            .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
-// 			            .scopes("read", "write", "trust")
-// 			            .accessTokenValiditySeconds(60)
 //		 		    .and()
 //	 		        .withClient("my-trusted-client-with-secret")
 // 			            .authorizedGrantTypes("password", "authorization_code", "refresh_token", "implicit")
 // 			            .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
 // 			            .scopes("read", "write", "trust")
 // 			            .secret("somesecret")
-//	 		        .and()
-// 		            .withClient("my-less-trusted-client")
-//			            .authorizedGrantTypes("authorization_code", "implicit")
-//			            .authorities("ROLE_CLIENT")
-//			            .scopes("read", "write", "trust")
-//     		        .and()
-//		            .withClient("my-less-trusted-autoapprove-client")
-//		                .authorizedGrantTypes("implicit")
-//		                .authorities("ROLE_CLIENT")
-//		                .scopes("read", "write", "trust")
-//		                .autoApprove(true)
-//		             .and()
 		            .withClient(client)
 		            	.resourceIds(api_resource_id)
 		            	.secret(secret)
@@ -174,9 +138,11 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 
 		@Override
 		public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
-			oauthServer.realm("sparklr2/client");
+			oauthServer.realm("sparklr2/client")
+				.tokenKeyAccess("permitAll()")
+				.checkTokenAccess("isAuthenticated()")
+			;
 		}
-		
 		
 		
 		
@@ -222,8 +188,19 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 		}
 	}
 	
-	
-	
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http
+        .authorizeRequests()
+        .antMatchers("/login**", "/oauth/authorize").permitAll()
+        .anyRequest().authenticated()
+        .and()
+        	.formLogin().permitAll()
+        .and()
+        	.csrf().disable()
+        ;
+	}
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth)
 			throws Exception {

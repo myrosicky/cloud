@@ -1,4 +1,4 @@
-package org.ll.gateway.context;
+package org.ll.gateway.config;
 
 import org.ll.gateway.filter.PreFilter;
 import org.springframework.context.annotation.Bean;

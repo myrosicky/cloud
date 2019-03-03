@@ -9,7 +9,7 @@ eureka:
 spring:
   cloud:
     config:
-      url: http://localhost:8888
+      url: ${CONFIG_SERVER_URL:http://localhost:8888}
 
 logging:
   level:
