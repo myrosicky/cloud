@@ -8,7 +8,8 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.auth.config.AuthWebSecurConfig.CustomUserDetailsService;
+import javax.servlet.Filter;
+
 import org.auth.dao.UserDao;
 import org.auth.dao.UserRoleDao;
 import org.business.models.User;
@@ -18,6 +19,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -28,7 +33,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.AuthenticationException;
@@ -40,17 +44,26 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.jwt.crypto.sign.Signer;
+import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
+import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -58,6 +71,7 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 
 	private final static Logger log = LoggerFactory.getLogger(AuthWebSecurConfig.class);
 	
+
 	@Configuration
 	@EnableAuthorizationServer
 	public static class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
@@ -71,9 +85,8 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 		@Value("${api.secret}")
 		private String secret;
 		
-		@Value("${api.grantType}")
-		private String grantType;
-		
+		@Autowired
+		MultiGrantType grantTypegs;
 		
 		@Value("${security.trustStore}")
 		private String authKeyStore;
@@ -90,32 +103,47 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 		@Value("${security.sigAlg}")
 		private String sigAlg;
 		
-		
-		
 		@Autowired
 		private TokenStore tokenStore;
 
 //		@Autowired
 //		private UserApprovalHandler userApprovalHandler;
 
+//		@Autowired
+//		private AuthorizationCodeServices authorizationCodeServices;
+		
 		@Autowired
+		@Qualifier("authenticationManager")
 		private AuthenticationManager authenticationManager;
+		
+		
+		class MultiGrantType{
+			private List<String> grantTypes;
+
+			public List<String> getGrantTypes() {
+				return grantTypes;
+			}
+
+			public void setGrantTypes(List<String> grantTypes) {
+				this.grantTypes = grantTypes;
+			}
+		}
+		
+		@Bean
+		@ConfigurationProperties("api")
+		MultiGrantType grantTypegs(){
+			return new MultiGrantType();
+		}
 
 		@Override
 		public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 
 			// @formatter:off
 			clients.inMemory()
-//		 		    .and()
-//	 		        .withClient("my-trusted-client-with-secret")
-// 			            .authorizedGrantTypes("password", "authorization_code", "refresh_token", "implicit")
-// 			            .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
-// 			            .scopes("read", "write", "trust")
-// 			            .secret("somesecret")
 		            .withClient(client)
 		            	.resourceIds(api_resource_id)
 		            	.secret(secret)
-		                .authorizedGrantTypes(grantType)
+		                .authorizedGrantTypes(grantTypegs.getGrantTypes().toArray(new String[grantTypegs.getGrantTypes().size()]))
 		                .authorities("ROLE_CLIENT")
 		                .scopes("read", "write")
 		                .autoApprove(true)
@@ -186,18 +214,27 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 			tokenServices.setReuseRefreshToken(true);
 			return tokenServices;
 		}
+		
 	}
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
         .authorizeRequests()
-        .antMatchers("/login**", "/oauth/authorize").permitAll()
-        .anyRequest().authenticated()
+        .antMatchers("/login**", "/favicon.ico").permitAll()
+        .anyRequest().hasAnyRole("API_USER", "ADMIN", "USER")
+        .and()
+        	.logout()
+            	.logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
         .and()
         	.formLogin().permitAll()
-        .and()
-        	.csrf().disable()
+//        .and()
+//        	.csrf()
+//                .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/oauth/authorize"))
+//                .disable()
+//        	.addFilterAfter(new OAuth2AuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
+        
         ;
 	}
 
@@ -213,6 +250,12 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 	UserDetailsService customUserDetailsService(){
 		return new CustomUserDetailsService();
 	}
+	
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 	
 	class CustomUserDetailsService implements UserDetailsService {
 

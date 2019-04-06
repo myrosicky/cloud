@@ -7,6 +7,7 @@ spring:
       server:
         git:
           uri: ${HOME}/git/temp-config
+          refreshRate: 10
 
 eureka:
   client:

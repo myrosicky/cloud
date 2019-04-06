@@ -9,6 +9,6 @@ applications:
     - https://github.com/cloudfoundry/ibm-websphere-liberty-buildpack.git
   env:
     IBM_JVM_LICENSE: L-SMKR-AVSEUH
-    IBM_LIBERTY_LICENSE: L-CTUR-B4WNHE
+    IBM_LIBERTY_LICENSE: L-CTUR-B8GJRP
   services:
    - instance1

@@ -1,8 +1,8 @@
-package org.AuthenticateServer.dao;
+package org.auth.dao;
 
 import java.util.Date;
 
-import org.AuthenticateServer.config.TestConfig;
+import org.auth.config.TestConfig;
 import org.auth.dao.RoleDao;
 import org.business.models.Role;
 import org.junit.Test;
