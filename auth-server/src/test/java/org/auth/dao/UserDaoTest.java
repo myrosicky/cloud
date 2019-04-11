@@ -1,10 +1,9 @@
 package org.auth.dao;
 
-import java.util.Date;
-
 import org.auth.config.TestConfig;
-import org.auth.dao.UserDao;
+import org.auth.util.TimeUtil;
 import org.business.models.User;
+import org.business.models.applysystem.Dictionary;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -33,16 +32,18 @@ public class UserDaoTest extends TestConfig {
 	@Test
 	public final void testSaveIterableOfS() {
 		User user = new User();
-		user.setLoginLastTime(new Date());
+		log.info("TimeUtil.getCurrentTime():" + TimeUtil.getCurrentTime());
+		try {
+			user.setLoginLastTime(TimeUtil.getCurrentTime());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		user.setPassword(new BCryptPasswordEncoder().encode("llismoon"));
-		user.setregisterDate(new Date());
-		user.setRemark("no remark");
+		user.setRegisterDate(TimeUtil.getCurrentTime());
 		user.setGeneral_ip("127.0.0.1");
 		user.setUsername("u");
-		user.setValid(1);
+		user.setDeleted(Dictionary.Deleted.FALSE.toString());
 		user.setCategory("");
-		user.setLoginLastTime(new Date());
-		user.setregisterDate(new Date());
 		user.setRemark("");
 		userDao.save(user);
 	}
@@ -52,7 +53,7 @@ public class UserDaoTest extends TestConfig {
 		log.debug("passwordEncoder:" + passwordEncoder);
 		User user = userDao.findByUsername("u");
 		user.setPassword(passwordEncoder.encode("p"));
-		user.setLoginLastTime(new Date());
+		user.setLoginLastTime(TimeUtil.getCurrentTime());
 		userDao.save(user);
 	}
 	

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.auth.config.TestConfig;
 import org.auth.dao.RoleDao;
+import org.auth.util.TimeUtil;
 import org.business.models.Role;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,22 +25,22 @@ public class RoleDaoTest extends TestConfig {
 	public final void testSaveS() {
 		Role role = new Role();
 		role.setName("USER");
-		role.setCreateBy("junit");
-		role.setCreateTime(new Date());
+		role.setCreateBy(1l);
+		role.setCreateTime(TimeUtil.getCurrentTime());
 		roleDao.save(role);
 		log.debug("role.getId():" + role.getId());
 		
 		role = new Role();
 		role.setName("ADMIN");
-		role.setCreateBy("junit");
-		role.setCreateTime(new Date());
+		role.setCreateBy(1l);
+		role.setCreateTime(TimeUtil.getCurrentTime());
 		roleDao.save(role);
 		log.debug("role.getId():" + role.getId());
 		
 		role = new Role();
 		role.setName("API_USER");
-		role.setCreateBy("junit");
-		role.setCreateTime(new Date());
+		role.setCreateBy(1l);
+		role.setCreateTime(TimeUtil.getCurrentTime());
 		roleDao.save(role);
 		log.debug("role.getId():" + role.getId());
 		
