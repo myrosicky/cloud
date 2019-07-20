@@ -1,3 +1,48 @@
+################ spring ################
+# Tips:
+# each repository(git.uri) must has its own application.yml
+# each repository(git.uri) wont share their own config file.
+# each git.uri or repos.xx.uri path must contain ,git file which means an well-prepared git repository
+# repos.xx.pattern(s) is used to match {application}/{profile}
+# git.searchPaths: the sub folders of this repository
+
 spring:
   application:
     name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: ${HOME}/git/temp-config/
+          refreshRate: 10
+          force-pull: true				# pull from remote repository if the local copy is dirty
+          deleteUntrackedBranches: true
+          searchPaths: api, front-end, model, cloud*
+          repos: 
+            api-gateway:
+               cloneOnStart: true
+               force-pull: true
+               deleteUntrackedBranches: true
+               pattern:                  
+                 - 'api-gateway*'
+               uri: ${HOME}/git/temp-config/cloud-api-gateway/	
+
+################ jasypt ################
+# jasypt.encryptor.password is a salt for encryption
+jasypt:
+  encryptor:
+    password: llismoon
+
+################ encrypt ################
+# this config must be placed 
+#	1. after spring.cloud.config.server.* 
+#   2. in bootstrap.yml
+#
+# password: store password
+# secret: key password
+encrypt:
+  keyStore:
+    location: classpath:/keystore/config-server.pkcs12
+    password: config-server  
+    alias: enckey
+    secret: config-server  

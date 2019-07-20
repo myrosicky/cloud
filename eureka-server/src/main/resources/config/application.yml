@@ -2,14 +2,22 @@ server:
   port: 8761
 
 eureka:
-  client:
-    register-with-eureka: false
-    fetch-registry: false
+#  client:
+#    register-with-eureka: false
+#    fetch-registry: false
+#    enabled: false
+  instance:
+#    hostName: ${vcap.application.uris[0]}
+    hostName: localhost
+    statusPageUrl: http://${eureka.instance.hostName}/info
+    healthCheckUrl: http://${eureka.instance.hostName}/health
+    nonSecurePortEnabled: true
+    securePortEnabled: true
     
-spring:
-  cloud:
-    config:
-      url: ${CONFIG_SERVER_URL:http://localhost:8888}
+#spring:
+#  cloud:
+#    config:
+#      url: ${CONFIG_SERVER_URL:http://localhost:8888}
 
 logging:
   level:

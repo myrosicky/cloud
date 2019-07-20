@@ -3,4 +3,19 @@ spring:
     name: auth-server
   cloud:
     config:
-      uri: ${CONFIG_SERVER_URL:http://localhost:8888}
+      discovery: 
+        enable: true
+        service-id: CONFIG-SERVER
+      profile: oauth2
+#  cloud:
+#    config:
+#      uri: ${CONFIG_SERVER_URL:http://localhost:8888}
+      
+
+########### eureka ###########
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: https://ll-cloud-comedic-cassowary.cfapps.io/eureka-server/eureka/
+    healthcheck:
+      enabled: true

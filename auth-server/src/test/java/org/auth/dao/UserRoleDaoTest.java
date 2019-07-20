@@ -1,9 +1,6 @@
 package org.auth.dao;
 
-import java.util.Date;
-
 import org.auth.config.TestConfig;
-import org.auth.dao.UserRoleDao;
 import org.auth.util.TimeUtil;
 import org.business.models.UserRole;
 import org.junit.Test;
