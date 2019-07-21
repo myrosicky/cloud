@@ -3,7 +3,7 @@ applications:
 - name: ll-auth-server
   memory: 150M
   instances: 1 
-  path: target/auth-server-0.0.1-SNAPSHOT.war
+  path: target/auth-server-0.0.1.war
   random-route: false
   buildpacks:
     - https://github.com/cloudfoundry/ibm-websphere-liberty-buildpack.git

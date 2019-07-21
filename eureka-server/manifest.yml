@@ -3,7 +3,7 @@ applications:
 - name: ll-eureka-server
   memory: 300M
   instances: 2 
-  path: target/eureka-server-0.0.1-SNAPSHOT.war
+  path: target/eureka-server-0.0.1.war
   random-route: true
   buildpacks:
     - https://github.com/cloudfoundry/ibm-websphere-liberty-buildpack.git
