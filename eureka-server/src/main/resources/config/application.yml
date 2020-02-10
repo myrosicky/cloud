@@ -2,10 +2,9 @@ server:
   port: 8761
 
 eureka:
-#  client:
-#    register-with-eureka: false
-#    fetch-registry: false
-#    enabled: false
+  client:
+    register-with-eureka: false
+    fetch-registry: false
   instance:
 #    hostName: ${vcap.application.uris[0]}
     hostName: localhost

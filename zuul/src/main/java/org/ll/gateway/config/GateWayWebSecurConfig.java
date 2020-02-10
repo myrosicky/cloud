@@ -36,14 +36,14 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
-@Configuration
-@EnableWebSecurity
+//@Configuration
+//@EnableWebSecurity
 public class GateWayWebSecurConfig extends WebSecurityConfigurerAdapter {
 
 	private final static Logger log = LoggerFactory.getLogger(GateWayWebSecurConfig.class);
 	
-	@Configuration
-	@EnableResourceServer
+//	@Configuration
+//	@EnableResourceServer
 	protected static class ResourceServer extends ResourceServerConfigurerAdapter {
 
 //		@Autowired
@@ -67,6 +67,8 @@ public class GateWayWebSecurConfig extends WebSecurityConfigurerAdapter {
 		@Value("${security.resourceID}")
 		private String API_RESOURCE_ID;
 		
+		@Autowired private JwtAccessTokenConverter tokenConverter;
+		
 		@Override
 		public void configure(ResourceServerSecurityConfigurer resources) {
 			resources.resourceId(API_RESOURCE_ID).tokenServices(tokenServices()).stateless(false);
@@ -83,7 +85,7 @@ public class GateWayWebSecurConfig extends WebSecurityConfigurerAdapter {
 				.requestMatchers().antMatchers("/api/**", "/oauth/users/**", "/oauth/clients/**","/me")
 			.and()
 				.authorizeRequests()
-					.antMatchers("/api/**").access(" hasAnyRole('ROLE_API_USER')")
+					.antMatchers("/api/**").access(" #oauth2.hasScope('read') and (#oauth2.clientHasRole('ROLE_CLIENT') or hasAnyRole('ROLE_ADMIN', 'ROLE_API_USER', 'ROLE_USER')) ")
 					
 					.antMatchers("/me").access("#oauth2.hasScope('read')")					
 					.antMatchers("/photos").access("#oauth2.hasScope('read') or (!#oauth2.isOAuth() and hasRole('ROLE_USER'))")                                        
@@ -99,7 +101,9 @@ public class GateWayWebSecurConfig extends WebSecurityConfigurerAdapter {
 			// @formatter:on
 		}
 		
-		JwtAccessTokenConverter tokenConverter(){
+		@Bean
+		public JwtAccessTokenConverter tokenConverter(){
+			boolean isDebug = log.isDebugEnabled();
 			JwtAccessTokenConverter jwtTokenEnhancer = new JwtAccessTokenConverter();
 			jwtTokenEnhancer.setVerifier(new SignatureVerifier(){
 
@@ -111,6 +115,13 @@ public class GateWayWebSecurConfig extends WebSecurityConfigurerAdapter {
 				@Override
 				public void verify(byte[] content, byte[] signature) {
 					try {
+						if(isDebug){
+							log.debug("sigAlg:" + sigAlg);
+							log.debug("storeType:" + storeType);
+							log.debug("trustStore:" + trustStore);
+							log.debug("storepass:" + storepass);
+							log.debug("trustKeyAlias:" + trustKeyAlias);
+						}
 						KeyStore keystore = KeyStore.getInstance(storeType);
 						keystore.load(new ClassPathResource(trustStore).getInputStream(), storepass.toCharArray());
 						Certificate cert = keystore.getCertificate(trustKeyAlias);
@@ -134,12 +145,12 @@ public class GateWayWebSecurConfig extends WebSecurityConfigurerAdapter {
 		}
 		
 		@Bean
-		TokenStore jwtTokenStore(){
-			return new JwtTokenStore(tokenConverter());
+		public TokenStore jwtTokenStore(){
+			return new JwtTokenStore(tokenConverter);
 		}
 		
 		@Bean
-		ResourceServerTokenServices tokenServices(){
+		public ResourceServerTokenServices tokenServices(){
 			DefaultTokenServices tokenServices = new DefaultTokenServices();
 			tokenServices.setTokenStore(jwtTokenStore());
 			return tokenServices;

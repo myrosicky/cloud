@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -17,6 +18,8 @@ public class RoleDaoTest extends TestConfig {
 	
 	@Autowired
 	RoleDao roleDao;
+	
+	@Autowired PasswordEncoder passwordEncoder;
 
 	@Test
 	public final void testSaveS() {
@@ -46,10 +49,13 @@ public class RoleDaoTest extends TestConfig {
 	
 	@Test
 	public final void testDelete() {
-		roleDao.delete(1l);
-		roleDao.delete(2l);
+		roleDao.deleteById(1l);
+		roleDao.deleteById(2l);
 	}
 	
-	
+	@Test
+	public final void test(){
+		log.debug("result:" + passwordEncoder.encode("secret"));
+	}
 
 }

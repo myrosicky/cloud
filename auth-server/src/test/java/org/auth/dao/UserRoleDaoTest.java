@@ -49,7 +49,7 @@ public class UserRoleDaoTest extends TestConfig {
 	
 	@Test
 	public final void testDelete() {
-		userRoleDao.delete(3l);
+		userRoleDao.deleteById(3l);
 	}
 
 }

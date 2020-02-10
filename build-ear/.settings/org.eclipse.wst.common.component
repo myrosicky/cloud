@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="cloud">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/ear-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/application" tag="defaultRootSource"/>
+        <dependent-module archiveName="auth-server-0.0.1.war" deploy-path="/" handle="module:/resource/auth-server/auth-server">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="eureka-server-0.0.1.war" deploy-path="/" handle="module:/resource/eureka-server/eureka-server">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="zuul-0.0.1.war" deploy-path="/" handle="module:/resource/zuul/zuul">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="component.inclusion.patterns" value="META-INF/**,**/*.war"/>
+    </wb-module>
+</project-modules>

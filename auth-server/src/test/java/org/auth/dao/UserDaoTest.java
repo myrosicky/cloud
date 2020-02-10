@@ -66,7 +66,7 @@ public class UserDaoTest extends TestConfig {
 	
 	@Test
 	public final void testDelete() {
-		userDao.delete(1l);
+		userDao.deleteById(1l);
 	}
 	
 }

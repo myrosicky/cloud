@@ -49,7 +49,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.security.oauth2.provider.client.InMemoryClientDetailsService;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -57,35 +56,39 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-@Configuration
-@EnableWebSecurity
+//@Configuration
+//@EnableWebSecurity
 public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 
 	private final static Logger log = LoggerFactory.getLogger(AuthWebSecurConfig.class);
 	
 
-	@Configuration
-	@EnableAuthorizationServer
+
+//	@Configuration
+//	@EnableAuthorizationServer
 	public static class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
 
-		@Value("${security.trustStore}")
+		@Value("${security.token.jwt.signer-key-store}")
 		private String authKeyStore;
 		
-		@Value("${security.storepass}")
+		@Value("${security.token.jwt.signer-key-store-pwd}")
 		private String storepass;
 		
-		@Value("${security.trustKeyAlias}")
+		@Value("${security.token.jwt.signer-key-alias}")
 		private String keyAlias;
 		
-		@Value("${security.storeType}")
+		@Value("${security.token.jwt.signer-store-type}")
 		private String storeType;
 		
-		@Value("${security.sigAlg}")
+		@Value("${security.token.jwt.signer-algorithm}")
 		private String sigAlg;
 		
 		@Autowired
 		private TokenStore tokenStore;
+		
+		@Autowired private JwtAccessTokenConverter tokenConverter;
 
 //		@Autowired
 //		private UserApprovalHandler userApprovalHandler;
@@ -97,8 +100,10 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 		@Qualifier("authenticationManager")
 		private AuthenticationManager authenticationManager;
 		
+		@Autowired @Qualifier("customUserDetailsService") private UserDetailsService userDetailsService;
+		
 		@Bean
-		@ConfigurationProperties("security.oauth2.clientDetails")
+		@ConfigurationProperties("security.oauth2.client-details")
 		Oauth2ClientDetailsProperties oauth2ClientDetailsProperties(){
 			return new Oauth2ClientDetailsProperties();
 		}
@@ -121,7 +126,16 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 
 			// @formatter:off
 			clients.inMemory()
-					.clients(inMemoryClientDetailsService())
+//					.clients(inMemoryClientDetailsService())
+					.withClient("api_client")
+					.resourceIds("sparklr")
+					.secret("$2a$10$tCGiD6PTY/GbVLv97NcImOWMrX4wkEH6rAuJOpKZeuaQgB86Pov5C")
+		            .authorizedGrantTypes("authorization_code", "refresh_token")
+		            .authorities("ROLE_CLIENT")
+		            .scopes("read", "write")
+		            .autoApprove(true)
+		            .accessTokenValiditySeconds(600)
+		            .refreshTokenValiditySeconds(900)
 			;
 			// @formatter:on
 		}
@@ -130,7 +144,7 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 		public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 			endpoints
 					.tokenStore(tokenStore)
-					.accessTokenConverter(tokenConverter())
+					.accessTokenConverter(tokenConverter)
 //					.userApprovalHandler(userApprovalHandler)
 					.authenticationManager(authenticationManager)
 					;
@@ -141,13 +155,15 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 			oauthServer.realm("sparklr2/client")
 				.tokenKeyAccess("permitAll()")
 				.checkTokenAccess("isAuthenticated()")
+				.allowFormAuthenticationForClients()
 			;
 		}
 		
 		
 		
 		@Bean
-		JwtAccessTokenConverter tokenConverter(){
+		public JwtAccessTokenConverter tokenConverter(){
+			boolean isDebug = log.isDebugEnabled();
 			JwtAccessTokenConverter jwtTokenEnhancer = new JwtAccessTokenConverter();
 			jwtTokenEnhancer.setSigner(new Signer(){
 				@Override
@@ -157,27 +173,28 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 
 				@Override
 				public byte[] sign(byte[] bytes) {
-					if(log.isDebugEnabled()){
+					if(isDebug){
+						log.debug("sigAlg:" + sigAlg);
 						log.debug("authKeyStore:" + authKeyStore);
 						log.debug("storepass:" + storepass);
 						log.debug("keyAlias:" + keyAlias);
 					}
 					try {
 						KeyStoreKeyFactory keystore = new KeyStoreKeyFactory(new ClassPathResource(authKeyStore), storepass.toCharArray());
-						if(log.isDebugEnabled()){
+						if(isDebug){
 							log.debug("keystore:" + keystore);
 						}
 						PrivateKey privateKey = keystore.getKeyPair(keyAlias).getPrivate();
-						if(log.isDebugEnabled()){
+						if(isDebug){
 							log.debug("privateKey:" + privateKey);
 						}
 						Signature sig = Signature.getInstance(algorithm());
-						if(log.isDebugEnabled()){
+						if(isDebug){
 							log.debug("sig:" + sig);
 						}
 						sig.initSign(privateKey);
 						sig.update(bytes);
-						if(log.isDebugEnabled()){
+						if(isDebug){
 							log.debug("sig done" );
 						}
 						return sig.sign();
@@ -236,7 +253,7 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 	}
 	
 	@Bean
-	UserDetailsService customUserDetailsService(){
+	public UserDetailsService customUserDetailsService(){
 		return new CustomUserDetailsService();
 	}
 	
@@ -284,6 +301,8 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 	
+	@Autowired private PasswordEncoder bCryptPasswordEncoder;
+	
 	@Bean
 	AuthenticationProvider customAuthenticationProvider(){
 		DaoAuthenticationProvider customAuthenticationProvider = new DaoAuthenticationProvider(){
@@ -304,7 +323,7 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 				}
 				
 				if(!userDetails.isEnabled() 
-						|| !bCryptPasswordEncoder().matches(password, userDetails.getPassword())
+						|| !bCryptPasswordEncoder.matches(password, userDetails.getPassword())
 						){
 					throw new BadCredentialsException("bad credentials:" + username);
 				}

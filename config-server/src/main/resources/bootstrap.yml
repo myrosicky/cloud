@@ -4,7 +4,7 @@
 # each repository(git.uri) wont share their own config file.
 # each git.uri or repos.xx.uri path must contain ,git file which means an well-prepared git repository
 # repos.xx.pattern(s) is used to match {application}/{profile}
-# git.searchPaths: the sub folders of this repository
+# git.searchPaths: the sub folders of this repository, config server will find according to the application name.
 
 spring:
   application:
@@ -13,11 +13,11 @@ spring:
     config:
       server:
         git:
-          uri: ${HOME}/git/temp-config/
+          uri: ${HOME}/git/temp-config
           refreshRate: 10
           force-pull: true				# pull from remote repository if the local copy is dirty
           deleteUntrackedBranches: true
-          searchPaths: api, front-end, model, cloud*
+          searchPaths: api*, front-end, model, cloud*
           repos: 
             api-gateway:
                cloneOnStart: true

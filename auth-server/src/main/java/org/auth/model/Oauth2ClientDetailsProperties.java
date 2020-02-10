@@ -9,5 +9,5 @@ import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 @Data
 public class Oauth2ClientDetailsProperties {
 
-	List<BaseClientDetails> clients;
+	private List<BaseClientDetails> clients;
 }
