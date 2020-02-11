@@ -1,4 +1,4 @@
-FROM tomcat:9.0.30
+FROM tomcat:jdk8-openjdk
 MAINTAINER "myrosicky"
 ARG BUILD_FILE
 ADD src/main/docker/ /usr/local/tomcat/conf/
