@@ -1,4 +1,4 @@
-FROM daocloud.io/daocloud/dao-tomcat:v7.0.55 
+FROM tomcat:jdk8-openjdk
 MAINTAINER "myrosicky"
 ARG BUILD_FILE
 ADD src/main/docker/ /tomcat/conf/
