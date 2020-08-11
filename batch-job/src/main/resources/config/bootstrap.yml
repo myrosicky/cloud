@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: batch-job
+  cloud:
+    config:
+      discovery: 
+        enable: true
+        service-id: CONFIG-SERVER
+      profile: dev, feign
+ 
+      
+cloudms:
+  discovery:
+    auto-config:
+      enabled: true
+      defaultZone: http://localhost:8761/eureka-server-0.0.1/eureka
+      

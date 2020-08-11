@@ -21,10 +21,10 @@ import org.springframework.stereotype.Component;
 
 @Component("userDetailsService")
 @Primary
-public class CustomUserDetailsService implements UserDetailsService {
+public class DBUserDetailsService implements UserDetailsService {
 	
 	private final static Logger log = LoggerFactory
-			.getLogger(CustomUserDetailsService.class);
+			.getLogger(DBUserDetailsService.class);
 
 	@Autowired
 	private UserDao userDao;

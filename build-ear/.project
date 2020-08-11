@@ -3,6 +3,7 @@
 	<name>build-ear</name>
 	<comment></comment>
 	<projects>
+		<project>cloud-gateway</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

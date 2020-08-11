@@ -1,3 +1,4 @@
+########### spring ###########
 spring:
   application:
     name: api-gateway
@@ -6,10 +7,24 @@ spring:
       discovery: 
         enable: true
         service-id: CONFIG-SERVER
-      profile: dev
-#  profiles:
-#    active: zuul_dev
+      profile: dev, oauth2
+  profiles:
+    active: dev
 #      uri: ${CONFIG_SERVER_URL:http://localhost:8888}
 
+  
+########### eureka ###########
+#eureka:
+#  client:
+#    serviceUrl:
+##      defaultZone: https://ll-cloud-comedic-cassowary.cfapps.io/eureka-server/eureka/
+#      defaultZone: http://localhost:8761/eureka-server-0.0.1/eureka
+#    healthcheck:
+#      enabled: true
 
+cloudms:
+  discovery:
+    auto-config:
+      enabled: true
+      defaultZone: http://localhost:8761/eureka-server-0.0.1/eureka
 

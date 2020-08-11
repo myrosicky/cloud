@@ -60,7 +60,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 //@Configuration
 //@EnableWebSecurity
-public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
+public class AuthWebSecurConfig 
+//extends WebSecurityConfigurerAdapter 
+{/*
 
 	private final static Logger log = LoggerFactory.getLogger(AuthWebSecurConfig.class);
 	
@@ -339,5 +341,5 @@ public class AuthWebSecurConfig extends WebSecurityConfigurerAdapter {
 	protected AuthenticationManager authenticationManager() throws Exception {
 		return super.authenticationManager();
 	}
-	
+	*/
 }

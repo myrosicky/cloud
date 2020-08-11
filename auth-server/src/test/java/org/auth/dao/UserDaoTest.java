@@ -1,9 +1,9 @@
 package org.auth.dao;
 
 import org.auth.config.TestConfig;
-import org.auth.util.TimeUtil;
 import org.business.models.User;
 import org.business.models.applysystem.Dictionary;
+import org.business.util.TimeUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

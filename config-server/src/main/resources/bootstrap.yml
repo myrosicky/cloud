@@ -17,21 +17,21 @@ spring:
           refreshRate: 10
           force-pull: true				# pull from remote repository if the local copy is dirty
           deleteUntrackedBranches: true
-          searchPaths: api*, front-end, model, cloud*
+          searchPaths: api*, front-end, model, cloud*, search*
           repos: 
             api-gateway:
                cloneOnStart: true
                force-pull: true
                deleteUntrackedBranches: true
-               pattern:                  
+               pattern:
                  - 'api-gateway*'
-               uri: ${HOME}/git/temp-config/cloud-api-gateway/	
+               uri: ${HOME}/git/temp-config/cloud-api-gateway
 
 ################ jasypt ################
 # jasypt.encryptor.password is a salt for encryption
-jasypt:
-  encryptor:
-    password: llismoon
+#jasypt:
+#  encryptor:
+#    password: XXX
 
 ################ encrypt ################
 # this config must be placed 
@@ -40,9 +40,9 @@ jasypt:
 #
 # password: store password
 # secret: key password
-encrypt:
-  keyStore:
-    location: classpath:/keystore/config-server.pkcs12
-    password: config-server  
-    alias: enckey
-    secret: config-server  
+#encrypt:
+#  keyStore:
+#    location: XXX
+#    password: XXX  
+#    alias: XXX
+#    secret: XXX  
