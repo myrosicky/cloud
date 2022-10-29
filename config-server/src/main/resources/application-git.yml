@@ -1,0 +1,53 @@
+##
+# client config:
+#   spring.cloud.config.label  the branch name of github repo, allows multiple names separated by comma and replace "/" with "_"
+#
+# server config: refer to org.springframework.cloud.config.server.environment.JGitEnvironmentRepository
+#
+#   spring.cloud.config.server.git.repos.<custom-name>.patterns:
+#     a comma-separated list of {application}/{profile} names with wildcards. (note that a pattern beginning wih a wildcard may need to be quoted)
+#
+#   spring.cloud.config.server.base-dir:
+#     default store path for version control backup files. default /tmp in Unix/Linux
+#
+#   encrypt.* refer  org.springframework.cloud.bootstrap.encrypt.KeyProperties
+#
+#   Spring properties loading internal rule:
+#     1. <app-name-profile>.yml > application<-profile>.yml > <app-name>.yml > application.yml
+#     2. the property in preceding yml is leveraged while the latter will be ignored.
+#        for example, the same "my-key" in <app-name-profile>.yml and <app-name>.yml, then the value in <app-name-profile>.yml is chosen.
+#     ps: can check the loading order in config server log.
+#
+#   important note!!!!!
+#     search-parths order in traversed!!  the latter is chosen.
+#                                         so remember to put the more specific to the latter place.
+
+spring:
+  logging-level.root: info
+  cloud.config.server:
+    encrypt.enabled: false
+    git:
+      base-dir: file:/tmp/
+      search-paths: "no" # read config from sub folders
+      force-pull: true # when local repo differentiate with remote
+      cloneOnStart: true
+      refreshRate: 60 # in seconds. when <=0, refresh at every request
+      timeout: 5 # in seconds
+      uri: git@github.com/XXX
+      ignoreLocalSshSettings: true
+      knownHostsFile: /tmp/XX/known_hosts
+      privateKey: |
+        XXX
+
+      repos:
+        local:
+          pattern: "*dev*,*test*"
+          url: file:/tmp/XX
+          default-label: dev
+        dev:
+          pattern: "*dev*, *test*, *non-prod*"
+          search-paths: "common, {application}"
+          uri: https://github.com/XXX
+          username: ${git.username}
+          password: ${git.password}
+          default-label: dev
